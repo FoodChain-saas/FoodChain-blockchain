@@ -7,10 +7,13 @@ import "./IERC721Metadata.sol";
 import "./IERC721Enumerable.sol";
 import "./ERC721Enumerable.sol";
 import "./IERC721Receiver.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract ERC721 is IERC721, IERC165, IERC721Metadata, IERC721Receiver, IERC721Enumberable, ERC721Enumerable{
     using Address for address;
     using Strings for uint256;
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIds;
 
     string private _name;
     string private _symbol;
