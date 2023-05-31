@@ -1,6 +1,6 @@
 //SPDX-License-Identifier: MIT
 
-pragma soldity ^0.8.7;
+pragma solidity ^0.8.7;
 
 import "./IERC165.sol";
 
@@ -36,7 +36,7 @@ interface IERC721 is IERC165 {
     }
 
     function getApproved(uint256 tokenId) external view returns (address delegate) {
-        require(_exist(tokenId), Token does not exist");
+        require(_exist(tokenId), "Token does not exist");
     }
 
     function setApprovalForAll(address delegate, bool _tokenApprovals) external {
@@ -45,7 +45,11 @@ interface IERC721 is IERC165 {
         emit ApprovalForAll(msg.sender, delegate, _tokenApproval);
     }
 
-    function isApprovalForAll(address owner, address operator) external view return (bool) {
+    function isApprovalForAll(address owner, address operator) external view returns (bool) {
         return _operatorApprovals[owner][operator];
+    }
+
+     function _exist(uint256 tokenId) internal view returns (bool) {
+        return _owners[tokenId] != address(0);
     }
 }

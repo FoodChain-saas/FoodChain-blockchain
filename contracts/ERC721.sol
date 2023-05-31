@@ -6,7 +6,7 @@ import "./IERC165.sol";
 import "./IERC721Metadata.sol";
 import "./IERC721Enumerable.sol";
 import "./ERC721Enumerable.sol";
-import "./ERC721Receiver.sol";
+import "./IERC721Receiver.sol";
 
 contract ERC721 is IERC721, IERC165, IERC721Metadata, IERC721Receiver, IERC721Enumberable, ERC721Enumerable{
     using Address for address;
@@ -68,13 +68,14 @@ contract ERC721 is IERC721, IERC165, IERC721Metadata, IERC721Receiver, IERC721En
         return _tokenApprovals[tokenId];
     }
 
-    function setApprovalForAll(address owner, address delegate, bool _tokenApproval) public returns() {
+    function setApprovalForAll(address owner, address delegate, bool _tokenApproval) public returns(bool) {
         require(owner != delegate, "Owner cannot approve himself");
         _operatorApprovals[owner][delegate] = approved;
         emit ApprovalForAll(msg.sender, delegate, approved);
+        return _tokenApproval;
     }
 
-    function isApprovalForAll(address owner, address operator) public returns () {
+    function isApprovalForAll(address owner, address operator) public returns (address) {
         return _operatorApprovals[owner][operator];
     }
 
@@ -83,7 +84,7 @@ contract ERC721 is IERC721, IERC165, IERC721Metadata, IERC721Receiver, IERC721En
         emit Approval(ERC721.ownerOf(tokenId), to, tokenId);
     }
 
-    function safeTransfer(address from, address to, uint256 tokenId) public returns () {
+    function safeTransfer(address from, address to, uint256 tokenId) public returns (uint256) {
         require(from == ownerOf(tokenId), "Token does not belong to this user");
         require(_exist(tokenId), "Token does not exist");
         require(to != address(0), "Wrong destination");
@@ -97,30 +98,34 @@ contract ERC721 is IERC721, IERC165, IERC721Metadata, IERC721Receiver, IERC721En
         emit Transfer(from, to, tokenId);
 
         _afterTokenTransfer(from, to, tokenId);
+
+        return tokenId;
     }
 
-    function safeTransferFrom(address from, address to, uint256 tokenId) public returns () {
+    function safeTransferFrom(address from, address to, uint256 tokenId) public returns (uint256) {
         require(_exists(tokenId), "Item does not exist");
         require(from == ownerOf(tokenId), "Item does not belong to this user");
         require(to != address(0), "Inappropriate transfer");
-        require(_isApprovedOrOwner(msg.sender, tokenId), "Error: Unapproved Tranfer")
+        require(_isApprovedOrOwner(msg.sender, tokenId), "Error: Unapproved Tranfer");
         
         _safeTransfer(from, to, tokenId);
 
         emit Transfer(msg.sender, to, tokenId);
+
+        return tokenId;
     }
 
-    _exists(uint256 tokenId) internal view returns (bool) {
+    function _exists(uint256 tokenId) internal view returns (bool) {
         return _owners[tokenId] != address(0);
     }
 
-    isApprovedOrOwner(address spender, uint256 tokenId) internal () {
+    function isApprovedOrOwner(address spender, uint256 tokenId) internal {
         require(_exists(tokenId), "Item does not exist");
         address owner = ERC721.ownerOf(tokenId);
         return(spender ==  owner || isApprovedForAll(owner, spender) || getApproved(tokenId) == spender);
     }
 
-    function safeMint(address to, uint256 tokenId) internal () {
+    function safeMint(address to, uint256 tokenId) internal {
         require(to != address(0), "Token cannot be minted to this address");
         require(!_exists(tokenId), "Token exist already");
         require(_checkOnERC721received(address(0), to, tokenId), "Please transfer to a Reeicever account");
@@ -136,7 +141,7 @@ contract ERC721 is IERC721, IERC165, IERC721Metadata, IERC721Receiver, IERC721En
 
     }
 
-    function burn(address owner, uint256 tokenId) internal () {
+    function burn(address owner, uint256 tokenId) internal {
         require(owner == ownerOf(tokenId), "Token does not belong to you");
         require(_exists(tokenId), "Token does not exist");
         _beforeTokenTransfer(address(0), to, tokenId);
@@ -147,7 +152,12 @@ contract ERC721 is IERC721, IERC165, IERC721Metadata, IERC721Receiver, IERC721En
         _afterTokenTransfer(address(0), to, tokenId);
     }
 
-    function transferFrom(address from, address to, uint256 tokenId) public view returns () {
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId)
+        public view returns
+        (uint256) {
         return tokenId;
     }
 
