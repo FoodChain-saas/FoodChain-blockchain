@@ -2,10 +2,10 @@
 
 pragma solidity ^0.8.7;
 
-import "./ERC721";
+import "./ERC721.sol";
 
 abstract contract ERC721URIStorage is ERC721 {
-    using String for uint256;
+    // using String for uint256;
 
     mapping(uint256 => string) private _tokenURIs;
 

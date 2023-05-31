@@ -13,53 +13,21 @@ interface IERC721 is IERC165 {
 
     function ownerOf(uint256  tokenId) external view returns (address);
 
-    function safeTransferFrom(address from, address to, uint256 tokenId) external payable {
-        require(from != address(0), "Inappropriate Transaction");
-        require(from != address(0), "Inappropriate Transaction");
-        require(_exist(tokenId), "Token does not exist");
-        require(from == ownerOf(tokenId), "Token does not belong to this address");
-        require(_isApprovedOrOwner(msg.sender, tokenId), "Error: User not approved or Invalid owner");
+    function safeTransferFrom(address from, address to, uint256 tokenId) external payable returns (uint256);
 
-        _safeTransfer(from, to, tokenId);
+    function approve(address to, uint256 tokenId) external returns (bool);
 
-        emit Transfer(msg.sender, to, tokenId);
-    }
+    function getApproved(uint256 tokenId) external view returns (uint256);
 
-    function approve(address to, uint256 tokenId) external {
-        require(_exist(tokenId), "Token does not exist");
-        require(_isApprovedOrOwner(msg.sender, tokenId), "Invalid Owner");
+    function setApprovalForAll(address delegate, bool _tokenApprovals) external;
 
-        emit Approval(ownerOf(tokenId), to, tokenId);
-    }
+    function isApprovalForAll(address owner, address operator) external view returns (address);
 
-    function getApproved(uint256 tokenId) external view returns (address delegate) {
-        require(_exist(tokenId), "Token does not exist");
-    }
+     function _exist(address _owners, uint256 tokenId) external view returns (bool);
 
-    function setApprovalForAll(address delegate, bool _tokenApprovals) external {
-        require(msg.sender != delegate, "Inappropriate Transaction");
+    function _isApprovedOrOwner(address owner, address approved) external view returns (bool);
 
-        emit ApprovalForAll(msg.sender, delegate, _tokenApprovals);
-    }
+    function _safeTransfer(address recepient, uint256 tokenId) external returns (uint256);
 
-    function isApprovalForAll(address owner, address operator) external view returns (bool) {
-        return _operatorApprovals[owner][operator];
-    }
-
-     function _exist(address _owners, uint256 tokenId) internal view returns (bool) {
-        return _owners[tokenId] != address(0);
-    }
-
-    function _isApprovedOrOwner(address owner, address approved) public view returns (bool) {
-
-    }
-
-    function _safeTransfer(address recepient, uint256 tokenId) public view
-    returns (uint256) {
-
-    }
-
-    function _operatorApprovals(address approvedOperator) public view returns (address) {
-
-    }
+    function _operatorApprovals(address approvedOperator) external view returns (address);
 }
