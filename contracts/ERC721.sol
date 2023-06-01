@@ -8,7 +8,9 @@ import "./ERC721Enumerable.sol";
 import "./IERC721Receiver.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-abstract contract ERC721 is IERC165, IERC721Metadata, IERC721Receiver, IERC721Enumerable, ERC721Enumerable{
+contract ERC721 is IERC165,
+IERC721Metadata, IERC721Receiver,
+IERC721Enumerable, ERC721Enumerable{
     // using Address for address;
     // using Strings for uint256;
     using Counters for Counters.Counter;
@@ -71,17 +73,19 @@ abstract contract ERC721 is IERC165, IERC721Metadata, IERC721Receiver, IERC721En
         return tokenId;
     }
 
-    function setApprovalForAll(address owner, address delegate) public returns(address) {
+    function setApprovalForAll(
+        address owner, uint256 tokenId, address delegate)
+        public returns(address) {
         require(owner != delegate, "Owner cannot approve himself");
-        address approved = _operatorApprovals[owner][delegate];
+        // address approved = _operatorApprovals[owner][delegate];
         
-        return approved;
+        return delegate;
 
-        emit ApprovalForAll(msg.sender, delegate, approved);
+        emit ApprovalForAll(msg.sender, delegate, tokenId);
     }
 
     function isApprovalForAll(address owner, address operator) public view returns (address) {
-        return _operatorApprovals[owner][operator];
+        return operator;
     }
 
     function safeTransfer(address from, address to, uint256 tokenId) public returns (uint256) {
@@ -106,7 +110,8 @@ abstract contract ERC721 is IERC165, IERC721Metadata, IERC721Receiver, IERC721En
         require(_exists(tokenId), "Item does not exist");
         require(from == ownerOf(tokenId), "Item does not belong to this user");
         require(to != address(0), "Inappropriate transfer");
-        require(isApprovedOrOwner(msg.sender, tokenId), "Error: Unapproved Tranfer");
+        // require(from == msg.sender, isApprovedOrOwner(msg.sender, tokenId), 
+        // "Error: Unapproved Tranfer");
         
         safeTransfer(from, to, tokenId);
 
@@ -119,16 +124,19 @@ abstract contract ERC721 is IERC165, IERC721Metadata, IERC721Receiver, IERC721En
         return _owners[tokenId] != address(0);
     }
 
-    function isApprovedOrOwner(address spender, uint256 tokenId) internal {
+    function isApprovedOrOwner(address spender, uint256 tokenId) internal 
+    returns(address) {
         require(_exists(tokenId), "Item does not exist");
         address owner = ERC721.ownerOf(tokenId);
-        return(spender ==  owner || isApprovalForAll(owner, spender) || getApproved(tokenId) == spender);
+        return spender;
+        // return(spender ==  owner || isApprovalForAll(owner, spender) || getApproved(tokenId) == spender);
     }
 
-    function safeMint(address to, uint256 tokenId) internal {
+    function safeMint(address to, uint256 tokenId, bytes memory _data) internal {
         require(to != address(0), "Token cannot be minted to this address");
         require(!_exists(tokenId), "Token exist already");
-        require(checkOnERC721Received(address(0), to, tokenId), "Please transfer to a Reeicever account");
+        require(checkOnERC721Received(address(0), to, tokenId, _data),
+        "Please transfer to a Reeicever account");
 
         _beforeTokenTransfer(address(0), to, tokenId);
 
@@ -142,12 +150,12 @@ abstract contract ERC721 is IERC165, IERC721Metadata, IERC721Receiver, IERC721En
     function burn(address owner, uint256 tokenId) internal {
         require(owner == ownerOf(tokenId), "Token does not belong to you");
         require(_exists(tokenId), "Token does not exist");
-        _beforeTokenTransfer(address(0), tokenId);
+        _beforeTokenTransfer(address(0), owner, tokenId);
 
         _balances[owner] -= 1;
         delete _owners[tokenId];
 
-        _afterTokenTransfer(address(0), tokenId);
+        _afterTokenTransfer(address(0), owner, tokenId);
     }
 
     function transferFrom(
@@ -160,10 +168,10 @@ abstract contract ERC721 is IERC165, IERC721Metadata, IERC721Receiver, IERC721En
     }
 
     function checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory _data)
-    private view returns (bool){
-      if (to.isContract()) {
+    private returns (bool){
+      if (isContract(to)) {
           try IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, _data) returns (bytes4 retval) {
-              return retval == IERC721Receiver.onERC721Received.selected;
+              return retval == IERC721Receiver.onERC721Received.selector;
         } catch (bytes memory reason) {
             if (reason.length == 0) {
                 revert("ERC721: transfer to non ERC721Receiver implementer");
@@ -176,6 +184,15 @@ abstract contract ERC721 is IERC165, IERC721Metadata, IERC721Receiver, IERC721En
       } else {
           return true;
       }
+    }
+
+        function isContract(address _address) public view returns (bool) {
+        uint32 size;
+        assembly {
+            size := extcodesize(_address)
+        }
+
+        return(size > 0);
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal override  virtual {}

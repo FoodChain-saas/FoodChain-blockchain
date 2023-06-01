@@ -2,8 +2,9 @@
 pragma solidity ^0.8.0;
 
 import "@chainlink/contracts/src/v0.8/ChainlinkClient.sol";
+// import "./ERC721.sol";
 
-contract LoyaltyPointTracker is ChainlinkClient {
+contract LoyaltyPointTracker is ChainlinkClient{
     using Chainlink for Chainlink.Request;
 
     address public owner;

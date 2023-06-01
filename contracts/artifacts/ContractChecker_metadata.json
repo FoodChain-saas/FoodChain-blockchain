@@ -1,0 +1,64 @@
+{
+	"compiler": {
+		"version": "0.8.18+commit.87f61d96"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					}
+				],
+				"name": "isContract",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/ContractChecker.sol": "ContractChecker"
+		},
+		"evmVersion": "paris",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/ContractChecker.sol": {
+			"keccak256": "0x68c4d658b32cb758adf4abbd5322a0481066822579d9dd9ed893d01913176e1e",
+			"urls": [
+				"bzz-raw://0507e3286be0fded130493650aa0479a5f89cd212e5a3eb84fcec5d9fa25163d",
+				"dweb:/ipfs/QmW1g1RQL1pZXGKmTMCS1QVMqqb1sYSbqJo3EckveuwaEa"
+			]
+		}
+	},
+	"version": 1
+}
